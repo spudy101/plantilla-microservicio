@@ -1,0 +1,88 @@
+# Entorno local completo: Postgres + Redis + los 5 servicios.
+#
+#   pnpm keys:generate      # crea services/*/.env con claves nuevas
+#   docker compose up -d --build
+#   curl http://localhost:4000/health
+#
+# Solo el gateway se publica hacia el host (4000). Los servicios se ven entre sí
+# por la red interna de compose, igual que en ECS detrás del ALB.
+
+x-service: &service
+  build:
+    context: .
+    dockerfile: docker/service.Dockerfile
+  restart: unless-stopped
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+x-infra-env: &infra-env
+  NODE_ENV: development
+  DB_HOST: postgres
+  REDIS_HOST: redis
+  EVENT_BUS_DRIVER: redis-streams
+  IAM_SERVICE_URL: http://iam-service:4001
+  PERSON_SERVICE_URL: http://person-service:4002
+  NOTIFICATION_SERVICE_URL: http://notification-service:4003
+  AUDIT_SERVICE_URL: http://audit-service:4004
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: plantilla
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ['5432:5432']
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d plantilla']
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    ports: ['6379:6379']
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      retries: 10
+
+  api-gateway:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: api-gateway } }
+    env_file: ./services/api-gateway/.env
+    environment: { <<: *infra-env, PORT: 4000 }
+    ports: ['4000:4000']
+
+  iam-service:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: iam-service } }
+    env_file: ./services/iam-service/.env
+    environment: { <<: *infra-env, PORT: 4001, RUN_MIGRATIONS: 'true', RUN_SEEDS: 'true' }
+
+  person-service:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: person-service } }
+    env_file: ./services/person-service/.env
+    environment: { <<: *infra-env, PORT: 4002, RUN_MIGRATIONS: 'true' }
+
+  notification-service:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: notification-service } }
+    env_file: ./services/notification-service/.env
+    environment: { <<: *infra-env, PORT: 4003, RUN_MIGRATIONS: 'true' }
+
+  audit-service:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: audit-service } }
+    env_file: ./services/audit-service/.env
+    environment: { <<: *infra-env, PORT: 4004, RUN_MIGRATIONS: 'true' }
+
+volumes:
+  pgdata:
+  redisdata:
