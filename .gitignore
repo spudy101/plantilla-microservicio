@@ -1,0 +1,31 @@
+# Dependencias
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Cobertura
+coverage/
+.nyc_output
+
+# Cachés
+.eslintcache
+.npm
+
+# Variables de entorno (solo se versiona el ejemplo)
+.env
+.env.*
+!.env.example
+
+# Claves generadas localmente
+keys/
+*.pem
+
+# SO / editores
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
