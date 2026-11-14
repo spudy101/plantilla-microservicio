@@ -1,0 +1,51 @@
+{
+  "name": "plantilla-microservicio",
+  "version": "1.0.0",
+  "description": "Plantilla base de microservicios en Node.js (monorepo pnpm): API Gateway, IAM, Person, Notification y Audit, con JWT RS256, RBAC, eventos (Redis Streams / SNS+SQS), auditoría centralizada y cifrado de PII.",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "comment": "========== DESARROLLO ==========",
+    "dev": "pnpm -r --parallel --filter \"./services/**\" dev",
+    "dev:gateway": "pnpm --filter @plantilla/api-gateway dev",
+    "dev:iam": "pnpm --filter @plantilla/iam-service dev",
+    "dev:person": "pnpm --filter @plantilla/person-service dev",
+    "dev:notification": "pnpm --filter @plantilla/notification-service dev",
+    "dev:audit": "pnpm --filter @plantilla/audit-service dev",
+    "comment2": "========== TESTING ==========",
+    "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
+    "comment3": "========== BASE DE DATOS ==========",
+    "db:migrate": "pnpm -r --filter \"./services/**\" db:migrate",
+    "db:seed": "pnpm -r --filter \"./services/**\" db:seed",
+    "comment4": "========== LINTING & FORMAT ==========",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "comment5": "========== DOCKER ==========",
+    "docker:infra": "docker compose up -d postgres redis",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "comment6": "========== UTILIDADES ==========",
+    "keys:generate": "node scripts/generate-keys.util.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spudy101/plantilla-microservicio.git"
+  },
+  "homepage": "https://github.com/spudy101/plantilla-microservicio#readme",
+  "author": "spudy101",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-filenames-simple": "^0.9.0",
+    "prettier": "^3.8.2"
+  }
+}

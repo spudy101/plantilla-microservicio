@@ -1,0 +1,8 @@
+packages:
+  - 'packages/*'
+  - 'services/*'
+
+# Dependencias con scripts de instalación nativos que pnpm debe permitir compilar.
+onlyBuiltDependencies:
+  - bcrypt
+  - sqlite3
