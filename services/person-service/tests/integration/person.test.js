@@ -16,7 +16,9 @@ const waitFor = async (fn, tries = 20) => {
     if (value) {
       return value;
     }
-    await new Promise(r => setTimeout(r, 25));
+    await new Promise(r => {
+      setTimeout(r, 25);
+    });
   }
   return null;
 };
@@ -38,7 +40,9 @@ describe('person-service', () => {
 
     const person = await waitFor(() => db.models.Person.findOne({ where: { user_id: userId } }));
     expect(person.first_name).toBe('Ana');
-    await new Promise(r => setTimeout(r, 50));
+    await new Promise(r => {
+      setTimeout(r, 50);
+    });
     expect(await db.models.Person.count({ where: { user_id: userId } })).toBe(1);
 
     await consumer.stop();

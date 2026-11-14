@@ -2,7 +2,9 @@ const { EventBus } = require('../../src/events/event-bus');
 const MemoryAdapter = require('../../src/events/adapters/memory.adapter');
 const RequestContext = require('../../src/utils/request-context.util');
 
-const flush = () => new Promise(resolve => setImmediate(resolve));
+const flush = () => new Promise(resolve => {
+    setImmediate(resolve);
+  });
 
 describe('EventBus (memory)', () => {
   let publisher;

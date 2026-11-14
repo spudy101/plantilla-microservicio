@@ -12,7 +12,9 @@ const { ROLES } = require('@plantilla/shared/constants/rbac');
 const { tokenFor } = require('../helpers/token.helper');
 
 const app = new NotificationApp().getApp();
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+const sleep = ms => new Promise(r => {
+    setTimeout(r, ms);
+  });
 
 describe('notification-service', () => {
   let consumer;

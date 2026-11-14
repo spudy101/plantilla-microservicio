@@ -9,7 +9,9 @@ const { ROLES } = require('@plantilla/shared/constants/rbac');
 const { tokenFor } = require('../helpers/token.helper');
 
 const app = new AuditApp().getApp();
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+const sleep = ms => new Promise(r => {
+    setTimeout(r, ms);
+  });
 
 const sampleRecord = (overrides = {}) => ({
   action: 'USER_LOGGED_IN',
